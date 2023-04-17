@@ -1,1 +1,1 @@
-An abstraction of the text.csv module + a CSV writer.
+An abstraction of the text.csv module + a simple CSV writer.
