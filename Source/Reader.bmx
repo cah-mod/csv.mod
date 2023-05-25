@@ -90,7 +90,7 @@ Private
 			Local str:String = ""
 			
 			For Local i:Int = 0 Until count
-				str :+ i + ","
+				str :+ i + delimiter
 			Next
 			
 			Return Left(str, Len(str)-1)
