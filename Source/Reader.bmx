@@ -26,7 +26,7 @@ Type TCSVReader
 	Rem
 	bbdoc:
 	EndRem
-	Method New(path:String, delimiter:String=",", quotes:Int=True, header:Int=True)
+	Method New(path:String, delimiter:String=",", quotes:Int=True, header:Int=True, encoding:EStreamEncoding=Null)
 		Local opts:TCsvOptions = New TCsvOptions()
 		opts.delimiter = delimiter
 		
@@ -35,18 +35,23 @@ Type TCSVReader
 		EndIf
 		
 		If Not header
-			opts.insertHeaderRow = GenerateHeader(path, delimiter, quotes)
+			opts.insertHeaderRow = GenerateHeader(path, delimiter, quotes, encoding)
 		EndIf
 		
 		Local file:TStream = ReadFile(path)
+		
+		If encoding
+			file = New TEncodingToUTF8Stream(file, encoding)
+		EndIf
+		
 		csv = TCsvParser.Parse(file, opts)
 	EndMethod
 	
 	Rem
 	bbdoc:
 	EndRem
-	Function Load:TList(path:String, delimiter:String, quotes:Int=True, header:Int=True)
-		Local csv:TCSVReader = New TCSVReader(path, delimiter, quotes, header)
+	Function Load:TList(path:String, delimiter:String, quotes:Int=True, header:Int=True, encoding:EStreamEncoding=Null)
+		Local csv:TCSVReader = New TCSVReader(path, delimiter, quotes, header, encoding)
 		
 		Local list:TList = CreateList()
 		
@@ -58,7 +63,7 @@ Type TCSVReader
 	EndFunction
 	
 Private
-	Function GenerateHeader:String(path:String, delimiter:String, quotes:Int)
+	Function GenerateHeader:String(path:String, delimiter:String, quotes:Int, encoding:EStreamEncoding=Null)
 		Local opts:TCsvOptions = New TCsvOptions()
 		opts.delimiter = delimiter
 		
@@ -70,6 +75,10 @@ Private
 		
 		Local file:TStream = ReadFile(path)
 		
+		If encoding
+			file = New TEncodingToUTF8Stream(file, encoding)
+		EndIf
+		
 		Try
 			Local csv:TCsvParser = TCsvParser.Parse(file, opts)
 			
@@ -79,7 +88,7 @@ Private
 				Return Null
 			EndIf
 			
-			Local row:TCSVRow = csv.GetRow()
+			Local row:TCsvRow = csv.GetRow()
 			
 			If Not row
 				Return Null
@@ -108,7 +117,7 @@ Private
 			Return Null
 		EndIf
 		
-		Local row:TCSVRow = csv.GetRow()
+		Local row:TCsvRow = csv.GetRow()
 		
 		If Not row
 			Return Null
