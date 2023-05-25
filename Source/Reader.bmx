@@ -132,6 +132,7 @@ Private
 		Return New TCSVReaderRow(row)
 	EndMethod
 	
+Public
 	Method ObjectEnumerator:TCSVReaderIterator()
 		Local i:TCSVReaderIterator = New TCSVReaderIterator()
 		i.reader = Self
